@@ -129,7 +129,7 @@ class AppIndicator:
         if any([dic['ahead'] for dic in stati.values()]):
             self.ind.set_icon(gtk.STOCK_GO_UP)
         else:
-            self.ind.set_icon(gtk.STOCK_APPLY)
+            self.ind.set_icon(gtk.STOCK_YES)
 
         # Set individual menu items
         for i, dir_item in enumerate(self.dirs_items):
