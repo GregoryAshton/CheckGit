@@ -18,7 +18,7 @@ import os
 import sys
 import inspect
 
-sys.tracebacklimit=0
+sys.tracebacklimit=2
 
 try:
     import pygtk
@@ -61,8 +61,11 @@ class AppIndicator:
         self.ind.set_status (appindicator.STATUS_ACTIVE)
         self.ind.set_attention_icon ("indicator-messages-new")
 
-        #self.ind.connect("connection-changed", self.SetIconAndMenu) 
-
+        self.IconMenuDictionary = {'ahead' : gtk.STOCK_GO_UP,
+                                   'diverged' : gtk.STOCK_REFRESH,
+                                   'behind' : gtk.STOCK_GO_DOWN,
+                                   'up-to-date' : gtk.STOCK_YES
+                                   }
         # create a menu
         menu = gtk.Menu()
 
@@ -92,17 +95,21 @@ class AppIndicator:
         gobject.timeout_add_seconds(int(self.update_period), self.SetIconAndMenu)
         gtk.threads_init()     
 
-    def IsAhead(self, path):
+    def CompareWithRemote(self, path):
         path = path.rstrip("/") + "/"
+
+        # Check if there is a remote
+        cmd_line = "git --git-dir={}.git --work-tree={} remote update".format(path, path)
+        status = subprocess.check_output(cmd_line, shell=True)
+        if "ERROR: Repository not found" in status:                
+            return None
+
         cmd_line = "git --git-dir={}.git --work-tree={} status".format(path, path)
         status = subprocess.check_output(cmd_line, shell=True)
-        if "ahead" in status:
-            return True
-        else:
-            return False
 
-    def IsBehind(self, path):
-        return False 
+        for state in ['ahead', 'diverged', 'behind', 'up-to-date']:
+            if state in status:
+                return state
 
     def ModifiedCount(self, path):
         path = path.rstrip("/") + "/"
@@ -114,8 +121,7 @@ class AppIndicator:
     def CheckAllDirStatus(self):
         stati = {}
         for (dir, list_item) in zip(self.dirs, self.dirs_items):
-            status = {'ahead' : self.IsAhead(dir), 
-                      'behind' : self.IsBehind(dir),
+            status = {'state_to_origin' : self.CompareWithRemote(dir),
                       'modified' : self.ModifiedCount(dir),
                      }
             stati[dir] = status
@@ -126,7 +132,7 @@ class AppIndicator:
         stati = self.CheckAllDirStatus()
          
         # Set the main icon
-        if any([dic['ahead'] for dic in stati.values()]):
+        if any([dic['state_to_origin']=='ahead' for dic in stati.values()]):
             self.ind.set_icon(gtk.STOCK_GO_UP)
         else:
             self.ind.set_icon(gtk.STOCK_YES)
@@ -137,16 +143,7 @@ class AppIndicator:
             label = str(dir)
             status = stati[dir]
 
-            # Logic to decide which image should be used
-            if status['behind'] and status['ahead']:
-                img = gtk.STOCK_REFRESH
-            elif stati[dir]['ahead']:
-                img = gtk.STOCK_GO_UP
-            elif stati[dir]['behind']:
-                img = gtk.STOCK_GO_DOWN
-            else:
-                img = gtk.STOCK_YES
-
+            img = self.IconMenuDictionary[status['state_to_origin']]
             dir_item.get_image().set_from_stock(img, 
                                                 gtk.ICON_SIZE_MENU)
    
