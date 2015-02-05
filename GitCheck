@@ -46,42 +46,13 @@ except ImportError:
 
 
 RCFILENAME = ".batchgitrc"
-CONFIGFILENAME = "/.config"
 this_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
-def ReadConfigFile():
-    _file = this_dir + CONFIGFILENAME
-    config = {}
-    with open(_file, "r") as f:
-        for line in f:
-            [key, value] = line.split(":")
-            key = key.replace(" ", "")
-            value = value.replace(" ", "").rstrip("\n")
-            config[key] = value
-    return config
-
-def WriteDefaultConfig():
-    _file = this_dir + CONFIGFILENAME
-    with open(_file, "w+") as f:
-        f.write(
-"""theme : light
-update_period : 100
-""")
-
-def GetIconsNames(config):
-    theme = config['theme']
-    config['ahead_icon'] = this_dir + "/Icons/" + "upload62_{}.svg".format(theme)
-    config['synced_icon'] = this_dir + "/Icons/" + "checkmark6_{}.svg".format(theme)
-    return config
-
-
 class AppIndicator:
-    def __init__(self, config):
+    def __init__(self, dirs):
 
-        self.dirs = config['dirs']
-        self.ahead_icon = config['ahead_icon']
-        self.synced_icon = config['synced_icon']
-        self.update_period = config['update_period']
+        self.dirs = dirs
+        self.update_period = 100
 
         self.ind = appindicator.Indicator("GitCheck", 
                                      "",
@@ -194,12 +165,6 @@ class AppIndicator:
 
 if __name__ == "__main__":
 
-    if not os.path.isfile(this_dir + CONFIGFILENAME):
-        WriteDefaultConfig()
-    config = ReadConfigFile()
-
-    config = GetIconsNames(config)
-
     rcfile = os.path.expanduser("~") + "/" + RCFILENAME
     if os.path.isfile(rcfile):
         dirs = []
@@ -207,9 +172,7 @@ if __name__ == "__main__":
             for line in f:
                 dirs.append(line.rstrip("\n"))
 
-        config['dirs'] = dirs
-
-        indicator = AppIndicator(config)
+        indicator = AppIndicator(dirs)
 
         gtk.main()
     
