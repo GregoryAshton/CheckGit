@@ -102,8 +102,7 @@ class AppIndicator:
 
         dirs_items = []
         for dir in self.dirs:
-            item = gtk.CheckMenuItem(dir)
-            item.set_active(True)
+            item = gtk.ImageMenuItem(gtk.STOCK_YES, dir)
             item.show()
             menu.append(item)
             dirs_items.append(item)
@@ -131,6 +130,9 @@ class AppIndicator:
         else:
             return False
 
+    def IsBehind(self, path):
+        return False 
+
     def ModifiedCount(self, path):
         path = path.rstrip("/") + "/"
         cmd_line = "git --git-dir={}.git --work-tree={} ls-files -m".format(path, path)
@@ -142,8 +144,8 @@ class AppIndicator:
         stati = {}
         for (dir, list_item) in zip(self.dirs, self.dirs_items):
             status = {'ahead' : self.IsAhead(dir), 
+                      'behind' : self.IsBehind(dir),
                       'modified' : self.ModifiedCount(dir),
-                      'active' : list_item.active,
                      }
             stati[dir] = status
                 
@@ -153,7 +155,7 @@ class AppIndicator:
         stati = self.CheckAllDirStatus()
          
         # Set the main icon
-        if any([dic['ahead']*dic['active'] for dic in stati.values()]):
+        if any([dic['ahead'] for dic in stati.values()]):
             self.ind.set_icon(self.ahead_icon)
         else:
             self.ind.set_icon(self.synced_icon)
@@ -162,8 +164,21 @@ class AppIndicator:
         for i, dir_item in enumerate(self.dirs_items):
             dir = self.dirs[i]
             label = str(dir)
-            if stati[dir]['ahead']:
-                label += " (ahead)"
+            status = stati[dir]
+
+            # Logic to decide which image should be used
+            if status['behind'] and status['ahead']:
+                img = gtk.STOCK_REFRESH
+            elif stati[dir]['ahead']:
+                img = gtk.STOCK_GO_UP
+            elif stati[dir]['behind']:
+                img = gtk.STOCK_GO_DOWN
+            else:
+                img = gtk.STOCK_YES
+
+            dir_item.get_image().set_from_stock(img, 
+                                                gtk.ICON_SIZE_MENU)
+   
 
             modified_count = stati[dir]['modified']
             if modified_count > 0:
