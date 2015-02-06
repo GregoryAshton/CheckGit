@@ -92,19 +92,25 @@ class AppIndicator:
 
         self.ind.set_menu(menu)
 
+        self.remote = True # Initially check the remote for changes
         self.SetIconAndMenu() # Initialise the icon
+        self.remote = False # Now we won't check the remote
        
         gobject.timeout_add_seconds(int(self.update_period), self.SetIconAndMenu)
         gtk.threads_init()     
 
-    def CompareWithRemote(self, path):
+    def CheckState(self, path):
+        """ Check the state information of path, if remote is true then it will 
+        also be compared to see if the path is behind """
+
         path = path.rstrip("/") + "/"
 
-        # Check if there is a remote
-        cmd_line = "git --git-dir={}.git --work-tree={} remote update".format(path, path)
-        status = subprocess.check_output(cmd_line, shell=True)
-        if "ERROR: Repository not found" in status:                
-            return None
+        if self.remote:
+            # Check if there is a remote
+            cmd_line = "git --git-dir={}.git --work-tree={} remote update".format(path, path)
+            status = subprocess.check_output(cmd_line, shell=True)
+            if "ERROR: Repository not found" in status:                
+                pass
 
         cmd_line = "git --git-dir={}.git --work-tree={} status".format(path, path)
         status = subprocess.check_output(cmd_line, shell=True)
@@ -123,7 +129,7 @@ class AppIndicator:
     def CheckAllDirStatus(self):
         stati = {}
         for (dir, list_item) in zip(self.dirs, self.dirs_items):
-            status = {'state_to_origin' : self.CompareWithRemote(dir),
+            status = {'state_to_origin' : self.CheckState(dir),
                       'modified' : self.ModifiedCount(dir),
                      }
             stati[dir] = status
