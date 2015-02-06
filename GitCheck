@@ -78,6 +78,7 @@ class AppIndicator:
         for dir in self.dirs:
             item = gtk.ImageMenuItem(gtk.STOCK_YES, dir)
             item.show()
+            item.set_always_show_image(True)
             menu.append(item)
             dirs_items.append(item)
 
@@ -85,6 +86,7 @@ class AppIndicator:
 
         quit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
         quit.connect("activate", self.quit)
+        quit.set_always_show_image(True)
         quit.show()
         menu.append(quit)
 
@@ -143,16 +145,17 @@ class AppIndicator:
             label = str(dir)
             status = stati[dir]
 
-            img = self.IconMenuDictionary[status['state_to_origin']]
-            dir_item.get_image().set_from_stock(img, 
+            if status['state_to_origin'] != None:
+                img = self.IconMenuDictionary[status['state_to_origin']]
+                dir_item.get_image().set_from_stock(img, 
                                                 gtk.ICON_SIZE_MENU)
    
 
-            modified_count = stati[dir]['modified']
-            if modified_count > 0:
-                label += " +{}".format(modified_count)
+                modified_count = stati[dir]['modified']
+                if modified_count > 0:
+                    label += " +{}".format(modified_count)
 
-            dir_item.set_label(label)
+                dir_item.set_label(label)
 
         return True
             
