@@ -17,6 +17,7 @@ import subprocess
 import os
 import sys
 import inspect
+import argparse
 
 sys.tracebacklimit=2
 
@@ -49,8 +50,9 @@ RCFILENAME = ".batchgitrc"
 this_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
 class AppIndicator:
-    def __init__(self, dirs):
+    def __init__(self, dirs, args):
 
+        self.args = args
         self.dirs = dirs
         self.update_period = 100
         self.remote = False # Flag to update the remote
@@ -103,7 +105,7 @@ class AppIndicator:
 
         path = path.rstrip("/") + "/"
 
-        if self.remote:
+        if self.remote and not self.args.no_remote:
             # Check if there is a remote
             cmd_line = "git --git-dir={}.git --work-tree={} remote update".format(path, path)
             status = subprocess.check_output(cmd_line, shell=True)
@@ -189,6 +191,12 @@ class AppIndicator:
 
 if __name__ == "__main__":
 
+    # Set up the argparse
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('--no_remote', action='store_true',
+                   help='If set then do not check the remote ever')
+    args = parser.parse_args()
+
     rcfile = os.path.expanduser("~") + "/" + RCFILENAME
     if os.path.isfile(rcfile):
         dirs = []
@@ -196,7 +204,7 @@ if __name__ == "__main__":
             for line in f:
                 dirs.append(line.rstrip("\n"))
 
-        indicator = AppIndicator(dirs)
+        indicator = AppIndicator(dirs, args),
 
         gtk.main()
     
