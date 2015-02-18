@@ -66,7 +66,8 @@ class AppIndicator:
         self.IconMenuDictionary = {'ahead' : gtk.STOCK_GO_UP,
                                    'diverged' : gtk.STOCK_REFRESH,
                                    'behind' : gtk.STOCK_GO_DOWN,
-                                   'up-to-date' : gtk.STOCK_YES
+                                   'up-to-date' : gtk.STOCK_YES,
+                                   'no-state' : gtk.STOCK_HELP
                                    }
         # create a menu
         menu = gtk.Menu()
@@ -118,6 +119,8 @@ class AppIndicator:
         for state in ['ahead', 'diverged', 'behind', 'up-to-date']:
             if state in status:
                 return state
+        
+        return 'no-state'
 
     def ModifiedCount(self, path):
         path = path.rstrip("/") + "/"
