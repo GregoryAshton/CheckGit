@@ -1,14 +1,22 @@
 #!/usr/bin/env python
 
 """
-Python indicator applet to show the status of batch git
+Python indicator applet to show the status of several git repositories
 
-Currently displays a 'tick' if no repositories are ahead of master and an 
-upload symbol otherwise.
+Behaviour
+---------
+When first opened, all repo's in `~/.batchgit` are checked against the remote.
+A label is assigned of the form ahead, diverged, behind, up-to-date or no-state
+is recorded for each repo. The menu is then set-up in the following way: The 
+main menu icon displays some global information - either all okay, or action
+required; each individual menu item is assigned a symbol to reflect its current
+status. In addition each menu item is given a `+n` to indicate the `n` modified
+files.
 
-Icons provided by 
-
-<div>Icons made by <a href="http://www.icons8.com" title="Icons8">Icons8</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>         is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a></div>
+The indicator then periodically checks all repo's with a frequency set by 
+`update_period` (by default this is 100 seconds). On these periodic checks the
+remote is *not* tested. To update against the remote a `manual update` entry
+is provided in the menu itself. 
 
 """
 
@@ -195,9 +203,12 @@ class AppIndicator:
 if __name__ == "__main__":
 
     # Set up the argparse
-    parser = argparse.ArgumentParser(description='')
-    parser.add_argument('--no_remote', action='store_true',
-                   help='If set then do not check the remote ever')
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument(
+        '--no_remote', action='store_true',
+        help='If set then do not check the remote ever')
     args = parser.parse_args()
 
     rcfile = os.path.expanduser("~") + "/" + RCFILENAME
