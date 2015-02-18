@@ -53,7 +53,7 @@ class AppIndicator:
 
         self.dirs = dirs
         self.update_period = 100
-
+        self.remote = False # Flag to update the remote
         self.ind = appindicator.Indicator("GitCheck", 
                                      "",
                                      appindicator.CATEGORY_APPLICATION_STATUS)
@@ -71,7 +71,7 @@ class AppIndicator:
 
         ManualCheck = gtk.MenuItem("Manually update")
         ManualCheck.show()
-        ManualCheck.connect("activate", self.SetIconAndMenu)
+        ManualCheck.connect("activate", self.SetIconAndMenu_NoRemote)
         menu.append(ManualCheck)
 
         dirs_items = []
@@ -92,9 +92,7 @@ class AppIndicator:
 
         self.ind.set_menu(menu)
 
-        self.remote = True # Initially check the remote for changes
-        self.SetIconAndMenu() # Initialise the icon
-        self.remote = False # Now we won't check the remote
+        self.SetIconAndMenu(remote=True) # Initialise the icon
        
         gobject.timeout_add_seconds(int(self.update_period), self.SetIconAndMenu)
         gtk.threads_init()     
@@ -136,7 +134,24 @@ class AppIndicator:
                 
         return stati
             
-    def SetIconAndMenu(self, *args):
+    def SetIconAndMenu(self, remote=False, *args):
+        """ Sets the icon and menu items 
+
+        Parameters
+        ----------
+        remote : bool
+            If true then update the remote for this time only
+
+        Returns
+        -------
+        True
+        """
+
+        if remote:
+            self.remote = True
+        else:
+            self.remote = False
+
         stati = self.CheckAllDirStatus()
          
         # Set the main icon
@@ -163,8 +178,11 @@ class AppIndicator:
 
                 dir_item.set_label(label)
 
+        self.remote=False
+
         return True
-            
+    
+    SetIconAndMenu_NoRemote = lambda self, args: self.SetIconAndMenu(self)
 
     def quit(self, widget, data=None):
         gtk.main_quit()
