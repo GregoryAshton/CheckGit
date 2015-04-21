@@ -114,8 +114,12 @@ class AppIndicator:
             # Check if there is a remote
             cmd_line = ("git --git-dir={}.git "
                         "--work-tree={} remote update".format(path, path))
-            status = subprocess.check_output(cmd_line, shell=True)
-            if "ERROR: Repository not found" in status:
+            try:
+                status = subprocess.check_output(cmd_line, shell=True)
+            except subprocess.CalledProcessError as e:
+                print("WARNING: Checking the remote failed. "
+                      "I will try to continue with no remote")
+                self.remote = False
                 pass
 
         cmd_line = "git --git-dir={}.git --work-tree={} status".format(
