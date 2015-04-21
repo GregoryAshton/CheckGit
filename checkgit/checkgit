@@ -139,11 +139,15 @@ class AppIndicator:
     def CheckAllDirStatus(self):
         stati = {}
         for (dir, list_item) in zip(self.dirs, self.dirs_items):
-            status = {'state_to_origin': self.CheckState(dir),
-                      'modified': self.ModifiedCount(dir),
-                      }
-            stati[dir] = status
-
+            if os.path.isdir(dir):
+                status = {'state_to_origin': self.CheckState(dir),
+                          'modified': self.ModifiedCount(dir),
+                          }
+                stati[dir] = status
+            else:
+                stati[dir] = {'state_to_origin': 'no-state',
+                              'modified': 0
+                              }
         return stati
 
     def SetIconAndMenu(self, remote=False, *args):
