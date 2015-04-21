@@ -1,4 +1,4 @@
-# GitCheck
+# checkgit
 
 ## Overview
 
@@ -45,11 +45,17 @@ is provided in the menu itself.
   [batchgotrc](https://github.com/maxhebditch/batchgit). If you want to have 
   something different then run with `-r .nameofotherrc`.
 
-## Quickstart
+## Installation
+
+`checkgit` can be installed with `pip install checkgit`. Alternatively if you
+want to install it from source, then the following should help:
+
+
+### Quickstart
 
 If you just want to see how this works then simply run
 
-    $ ./GitCheck
+    $ ./checkgit
 
 from this directory. Note: this will require a `.batchgitrc` in your home dir. 
 For example just create a file `~/.batchgitrc` with the contents
@@ -59,27 +65,27 @@ For example just create a file `~/.batchgitrc` with the contents
 
 Then the quickstart will run
 
-## Autostarting
-The setup for automatically starting GitCheck will depend on which system you
+### Autostarting
+The setup for automatically starting checkgit will depend on which system you
 are using. Here are instructions for each known system:
 
-### Ubuntu (14.04)
+#### Ubuntu (14.04)
 We will add a `.desktop` file as described
 [here](https://help.ubuntu.com/community/UnityLaunchersAndDesktopFiles).
 Simply put, there is a folder `~/.config/autostart/`, which will contain
 several files with extensions `.desktop`. These are programs to run at startup,
-so to get GitCheck to run at startup simply add a file named say
-`GitCheck.desktop` containing:
+so to get checkgit to run at startup simply add a file named say
+`checkgit.desktop` containing:
 
 ```
 [Desktop Entry]
 Type=Application
-Exec=/home/greg/Programs/GitCheck/GitCheck
+Exec=/home/greg/Programs/checkgit/checkgit/checkgit
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
-Name[en_GB]=GitCheck
-Name=GitCheck
+Name[en_GB]=checkgit
+Name=checkgit
 Comment[en_GB]=
 Comment=
 ```
@@ -96,7 +102,7 @@ alternative, so you may prefer to look at:
   for the Unity panel which finds all repo's in home directory. This is very
 much a more developed version.
 
-However, `GitCheck` does not rely on the Unity panel, so it has that going for
+However, `checkgit` does not rely on the Unity panel, so it has that going for
 it..
 
 There is also

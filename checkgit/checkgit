@@ -24,7 +24,6 @@ is provided in the menu itself.
 import subprocess
 import os
 import sys
-import inspect
 import argparse
 
 sys.tracebacklimit = 2
@@ -54,10 +53,6 @@ except ImportError:
     "    apt-get install python-appindicator\n")
 
 
-this_dir = os.path.dirname(os.path.abspath(
-    inspect.getfile(inspect.currentframe())))
-
-
 class AppIndicator:
     def __init__(self, dirs, args):
 
@@ -66,7 +61,7 @@ class AppIndicator:
         self.update_period = 100
         self.remote = False  # Flag to update the remote
         self.ind = appindicator.Indicator(
-            "GitCheck", "", appindicator.CATEGORY_APPLICATION_STATUS)
+            "checkgit", "", appindicator.CATEGORY_APPLICATION_STATUS)
 
         self.ind.set_status(appindicator.STATUS_ACTIVE)
         self.ind.set_attention_icon("indicator-messages-new")
@@ -209,7 +204,7 @@ def _rcfile_help_messg(rcfile):
     mssg = """ The rcfile {} does not exist
 
 Details:
-GitCheck uses the rcfile to load the paths of repo's that you want to check.
+checkgit uses the rcfile to load the paths of repo's that you want to check.
 You can create an rcfile for it to use by creating a file `~/.batchgitrc` in
 your home directory which contains lines with
 

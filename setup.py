@@ -1,4 +1,6 @@
 from distutils.core import setup
+import os
+
 setup(name='checkgit',
       packages=['checkgit'],
       version='0.1',
@@ -9,5 +11,5 @@ setup(name='checkgit',
       download_url='https://github.com/ga7g08/CheckGit/tarball/0.1',
       keywords=['git'],
       classifiers=[],
-      scripts=['CheckGit']
+      scripts=['checkgit/checkgit'],
       )
