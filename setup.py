@@ -1,4 +1,8 @@
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+
 import os
 
 setup(name='checkgit',
@@ -11,5 +15,9 @@ setup(name='checkgit',
       download_url='https://github.com/ga7g08/CheckGit/tarball/0.1',
       keywords=['git'],
       classifiers=[],
-      scripts=['checkgit/checkgit'],
+      entry_points={
+          'gui_scripts': [
+              'checkgit = checkgit.checkgit:main'
+          ]
+      }
       )

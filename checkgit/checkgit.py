@@ -220,8 +220,7 @@ your home directory which contains lines with
 """
     return mssg
 
-if __name__ == "__main__":
-
+def main():
     # Set up the argparse
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -248,3 +247,6 @@ if __name__ == "__main__":
         gtk.main()
     else:
         raise ValueError(_rcfile_help_messg(rcfile))
+
+if __name__ == "__main__":
+    main()
