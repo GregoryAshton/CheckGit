@@ -18,7 +18,7 @@ icon displays a warning symbol.
 
 I have attempted to keep it as simple as possible so it should make sense
 without reading the behaviour section. If you have any questions or would like
-to see something done differently please let me know. 
+to see something done differently please let me know.
 
 ### Behaviour
 
@@ -41,15 +41,20 @@ is provided in the menu itself.
   may be useful if you know you have no internet connection, or the remote
   checking is extremely slow.
 
-* The default rcfile if `.batchgitrc` for compatibility with Max's 
-  [batchgotrc](https://github.com/maxhebditch/batchgit). If you want to have 
+* The default rcfile if `.batchgitrc` for compatibility with Max's
+  [batchgotrc](https://github.com/maxhebditch/batchgit). If you want to have
   something different then run with `-r .nameofotherrc`.
 
 ## Installation
 
 `checkgit` can be installed with `pip install checkgit`. Alternatively if you
-want to install it from source, then the following should help:
+want to install it from source, then clone the repo and
 
+    $ python setup.py install
+
+Once installed, you'll have an executable `checkgit` on your `PATH` which
+when called will start the indicator. Note that to work properly `checkgit`
+requires a file `~/.batchgitrc` listing the repos to check.
 
 ### Quickstart
 
@@ -57,7 +62,7 @@ If you just want to see how this works then simply run
 
     $ ./checkgit
 
-from this directory. Note: this will require a `.batchgitrc` in your home dir. 
+from this directory. Note: this will require a `.batchgitrc` in your home dir.
 For example just create a file `~/.batchgitrc` with the contents
 
     /path/to/my/repo
@@ -80,7 +85,7 @@ so to get checkgit to run at startup simply add a file named say
 ```
 [Desktop Entry]
 Type=Application
-Exec=/home/greg/Programs/checkgit/checkgit/checkgit
+Exec=checkgit
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
