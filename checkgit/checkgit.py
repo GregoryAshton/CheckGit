@@ -28,42 +28,53 @@ import argparse
 
 sys.tracebacklimit = 2
 
+# try:
+#     import pygtk
+#     pygtk.require('2.0')
+#     import gobject
+#     import gtk
+# except ImportError:
+#     raise ImportError(
+#     "The python package gobject required for the batchgit indicator\n"
+#     "is not installed. To install you may use\n\n"
+#     "    apt-get install python-gobject\n")
+# except AssertionError:
+#     raise ImportError(
+#     "The python package gtk2 required for the batchgit indicator\n"
+#     "is not installed. To install you may use\n\n"
+#     "    apt-get install python-gtk2\n")
+#
+# try:
+#     import appindicator
+# except ImportError:
+#     raise ImportError(
+#     "The python package appindicator required for the batchgit indicator\n"
+#     "is not installed. To install you may use\n\n"
+#     "    apt-get install python-appindicator\n")
+
+# import pygtk
+# import gobject
+# import gtk
+# import appindicator
+
+from gi.repository import Gtk as gtk
 try:
-    import pygtk
-    pygtk.require('2.0')
-    import gobject
-    import gtk
-except ImportError:
-    raise ImportError(
-    "The python package gobject required for the batchgit indicator\n"
-    "is not installed. To install you may use\n\n"
-    "    apt-get install python-gobject\n")
-except AssertionError:
-    raise ImportError(
-    "The python package gtk2 required for the batchgit indicator\n"
-    "is not installed. To install you may use\n\n"
-    "    apt-get install python-gtk2\n")
+    from gi.repository import AppIndicator3 as appindicator
+except:
+    from gi.repository import appindicator
+from gi.repository import GObject as gobject
 
-try:
-    import appindicator
-except ImportError:
-    raise ImportError(
-    "The python package appindicator required for the batchgit indicator\n"
-    "is not installed. To install you may use\n\n"
-    "    apt-get install python-appindicator\n")
-
-
-class AppIndicator:
+class CGAppIndicator:
     def __init__(self, dirs, args):
 
         self.args = args
         self.dirs = dirs
         self.update_period = 100
         self.remote = False  # Flag to update the remote
-        self.ind = appindicator.Indicator(
-            "checkgit", "", appindicator.CATEGORY_APPLICATION_STATUS)
+        self.ind = appindicator.Indicator.new(
+            "checkgit", "", appindicator.IndicatorCategory.OTHER)
 
-        self.ind.set_status(appindicator.STATUS_ACTIVE)
+        self.ind.set_status(appindicator.IndicatorStatus.ACTIVE)
         self.ind.set_attention_icon("indicator-messages-new")
 
         self.IconMenuDictionary = {'ahead': gtk.STOCK_GO_UP,
@@ -74,6 +85,12 @@ class AppIndicator:
                                    }
         # create a menu
         menu = gtk.Menu()
+
+        switch = gtk.RadioButton()
+        switch.connect("notify::active", self.RemoteSwitchActivate)
+        switch.set_active(False)
+        switch.show()
+        menu.append(switch)
 
         ManualCheck = gtk.MenuItem("Manually update")
         ManualCheck.show()
@@ -91,6 +108,7 @@ class AppIndicator:
         self.dirs_items = dirs_items
 
         quit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
+        quit.set_use_stock(True)
         quit.connect("activate", self.quit)
         quit.set_always_show_image(True)
         quit.show()
@@ -102,7 +120,9 @@ class AppIndicator:
 
         gobject.timeout_add_seconds(int(self.update_period),
                                     self.SetIconAndMenu)
-        gtk.threads_init()
+
+    def RemoteSwitchActivate():
+        pass
 
     def CheckState(self, path):
         """ Check the state information of path, if remote is true then it will
@@ -189,9 +209,8 @@ class AppIndicator:
 
             if status['state_to_origin'] is not None:
                 img = self.IconMenuDictionary[status['state_to_origin']]
-                dir_item.get_image().set_from_stock(img,
-                                                    gtk.ICON_SIZE_MENU)
-
+                dir_item.set_image(gtk.Image.new_from_stock(img,
+                                                            gtk.IconSize.MENU))
                 modified_count = stati[dir]['modified']
                 if modified_count > 0:
                     label += " +{}".format(modified_count)
@@ -242,7 +261,7 @@ def main():
             for line in f:
                 dirs.append(line.rstrip("\n"))
 
-        indicator = AppIndicator(dirs, args),
+        indicator = CGAppIndicator(dirs, args),
 
         gtk.main()
     else:
