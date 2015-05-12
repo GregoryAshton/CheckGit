@@ -114,3 +114,10 @@ There is also
 
 * [sickill git-dude](https://github.com/sickill/git-dude): Not actively
   developed, but provides pop-up notifications for changes.
+
+## ToDo
+
+* Add support for changing `.batchgitrc` during runtime
+* Remove path to home directory from directories
+* Add hotkey support to open
+* Integrate with batchgit so that you can pull etc. from the menu
