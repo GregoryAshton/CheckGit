@@ -106,7 +106,14 @@ class AppIndicator:
 
     def CheckState(self, path):
         """ Check the state information of path, if remote is true then it will
-        also be compared to see if the path is behind """
+        also be compared to see if the path is behind
+
+        Returns
+        =======
+        state: str
+            One of ahead, diverged, behind, or up-to-date
+
+        """
 
         path = path.rstrip("/") + "/"
 
@@ -154,6 +161,23 @@ class AppIndicator:
                               }
         return stati
 
+    def GetIconFromDirStates(self):
+        """ Logic for setting the main icon """
+
+        stati = self.CheckAllDirStatus()
+        states = [dic['state_to_origin'] for dic in stati.values()]
+
+        if 'diverged' in states:
+            return gtk.STOCK_DIALOG_WARNING
+        if all([state == 'up-to-date' for state in states]):
+            return gtk.STOCK_YES
+        if ('behind' in states) and ('ahead' in states):
+            return gtk.STOCK_DIALOG_WARNING
+        if ('behind' in states):
+            return gtk.STOCK_GO_DOWN
+        if ('ahead' in states):
+            return gtk.STOCK_GO_UP
+
     def SetIconAndMenu(self, remote=False, *args):
         """ Sets the icon and menu items
 
@@ -172,16 +196,11 @@ class AppIndicator:
         else:
             self.remote = False
 
-        stati = self.CheckAllDirStatus()
-
         # Set the main icon
-        if any([dic['state_to_origin'] in ['ahead', 'diverged', 'behind']
-                for dic in stati.values()]):
-            self.ind.set_icon(gtk.STOCK_DIALOG_WARNING)
-        else:
-            self.ind.set_icon(gtk.STOCK_YES)
+        self.ind.set_icon(self.GetIconFromDirStates())
 
         # Set individual menu items
+        stati = self.CheckAllDirStatus()
         for i, dir_item in enumerate(self.dirs_items):
             dir = self.dirs[i]
             label = str(dir)
