@@ -82,7 +82,8 @@ class AppIndicator:
 
         dirs_items = []
         for dir in self.dirs:
-            item = gtk.ImageMenuItem(gtk.STOCK_YES, dir)
+            label_name = self.ClearDirName(dir)
+            item = gtk.ImageMenuItem(gtk.STOCK_YES, label_name)
             item.show()
             item.set_always_show_image(True)
             menu.append(item)
@@ -103,6 +104,11 @@ class AppIndicator:
         gobject.timeout_add_seconds(int(self.update_period),
                                     self.SetIconAndMenu)
         gtk.threads_init()
+
+    def ClearDirName(self, dir):
+        """ Give a cleaner directory name """
+        home_dir = os.environ['HOME']
+        return dir.replace(home_dir, "~")
 
     def CheckState(self, path):
         """ Check the state information of path, if remote is true then it will
@@ -203,7 +209,7 @@ class AppIndicator:
         stati = self.CheckAllDirStatus()
         for i, dir_item in enumerate(self.dirs_items):
             dir = self.dirs[i]
-            label = str(dir)
+            label = self.ClearDirName(str(dir))
             status = stati[dir]
 
             if status['state_to_origin'] is not None:
