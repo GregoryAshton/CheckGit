@@ -75,7 +75,8 @@ class AppIndicator:
         # create a menu
         menu = gtk.Menu()
 
-        ManualCheck = gtk.MenuItem("Manually update")
+        ManualCheck = gtk.ImageMenuItem(gtk.STOCK_REFRESH)
+        ManualCheck.set_label("Manually update")
         ManualCheck.show()
         ManualCheck.connect("activate", self.SetIconAndMenu_NoRemote)
         menu.append(ManualCheck)
