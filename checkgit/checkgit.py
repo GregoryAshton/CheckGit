@@ -219,7 +219,7 @@ class AppIndicator:
 
                 modified_count = stati[dir]['modified']
                 if modified_count > 0:
-                    label += " +{}".format(modified_count)
+                    label += " (+{})".format(modified_count)
 
                 dir_item.set_label(label)
 
