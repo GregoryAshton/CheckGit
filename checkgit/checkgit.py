@@ -174,16 +174,21 @@ class AppIndicator:
         stati = self.CheckAllDirStatus()
         states = [dic['state_to_origin'] for dic in stati.values()]
 
+        states = filter(lambda a: a != "no-state", states)  # Remove no-state
+
         if 'diverged' in states:
             return gtk.STOCK_DIALOG_WARNING
-        if all([state == 'up-to-date' for state in states]):
+        elif all([state == 'up-to-date' for state in states]):
             return gtk.STOCK_YES
-        if ('behind' in states) and ('ahead' in states):
+        elif ('behind' in states) and ('ahead' in states):
             return gtk.STOCK_DIALOG_WARNING
-        if ('behind' in states):
+        elif ('behind' in states):
             return gtk.STOCK_GO_DOWN
-        if ('ahead' in states):
+        elif ('ahead' in states):
             return gtk.STOCK_GO_UP
+        else:
+            print states
+            return gtk.STOCK_MISSING_IMAGE
 
     def SetIconAndMenu(self, remote=False, *args):
         """ Sets the icon and menu items
