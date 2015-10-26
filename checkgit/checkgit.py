@@ -35,9 +35,11 @@ try:
     import gtk
 except ImportError:
     raise ImportError(
-    "The python package gobject required for the batchgit indicator\n"
+    "The python package gobject or gtk required for the batchgit indicator\n"
     "is not installed. To install you may use\n\n"
-    "    apt-get install python-gobject\n")
+    "    apt-get install python-gobject\n"
+    "    apt-get install python-gtk2\n"
+    )
 except AssertionError:
     raise ImportError(
     "The python package gtk2 required for the batchgit indicator\n"
