@@ -13,10 +13,11 @@ required; each individual menu item is assigned a symbol to reflect its current
 status. In addition each menu item is given a `+n` to indicate the `n` modified
 files.
 
-The indicator then periodically checks all repo's with a frequency set by
-`update_period` (by default this is 100 seconds). On these periodic checks the
-remote is *not* tested. To update against the remote a `manual update` entry
-is provided in the menu itself.
+The indicator then periodically checks all repo's locally with a frequency set
+by `update_period` (by default this is 300 seconds); it will also check the
+remote repositorys with a frequency set by `update_period_remote` (by default
+this is 3600 seconds). To update against the remote at other times, a `manual
+update` entry is provided in the menu itself.
 
 """
 
@@ -56,11 +57,13 @@ except ImportError:
 
 
 class AppIndicator:
-    def __init__(self, dirs, args):
+    def __init__(self, dirs, args, update_period=300,
+                 update_period_remote=3600):
 
         self.args = args
         self.dirs = dirs
-        self.update_period = 100
+        self.update_period = update_period
+        self.update_period_remote = update_period_remote
         self.remote = False  # Flag to update the remote
         self.ind = appindicator.Indicator(
             "checkgit", "", appindicator.CATEGORY_APPLICATION_STATUS)
@@ -80,7 +83,7 @@ class AppIndicator:
         ManualCheck = gtk.ImageMenuItem(gtk.STOCK_REFRESH)
         ManualCheck.set_label("Manually update")
         ManualCheck.show()
-        ManualCheck.connect("activate", self.SetIconAndMenu_NoRemote)
+        ManualCheck.connect("activate", self.SetIconAndMenuRemote2)
         menu.append(ManualCheck)
 
         dirs_items = []
@@ -106,6 +109,8 @@ class AppIndicator:
 
         gobject.timeout_add_seconds(int(self.update_period),
                                     self.SetIconAndMenu)
+        gobject.timeout_add_seconds(int(self.update_period_remote),
+                                    self.SetIconAndMenuRemote)
         gtk.threads_init()
 
     def ClearDirName(self, dir):
@@ -189,7 +194,7 @@ class AppIndicator:
         elif ('ahead' in states):
             return gtk.STOCK_GO_UP
         else:
-            print states
+            print(states)
             return gtk.STOCK_MISSING_IMAGE
 
     def SetIconAndMenu(self, remote=False, *args):
@@ -209,7 +214,6 @@ class AppIndicator:
             self.remote = True
         else:
             self.remote = False
-
         # Set the main icon
         self.ind.set_icon(self.GetIconFromDirStates())
 
@@ -235,7 +239,8 @@ class AppIndicator:
 
         return True
 
-    SetIconAndMenu_NoRemote = lambda self, args: self.SetIconAndMenu(self)
+    SetIconAndMenuRemote2 = lambda self, args: self.SetIconAndMenu(self)
+    SetIconAndMenuRemote = lambda self : self.SetIconAndMenu(self)
 
     def quit(self, widget, data=None):
         gtk.main_quit()
