@@ -81,10 +81,17 @@ class AppIndicator:
         menu = gtk.Menu()
 
         ManualCheck = gtk.ImageMenuItem(gtk.STOCK_REFRESH)
-        ManualCheck.set_label("Manually update")
+        ManualCheck.set_always_show_image(True)
         ManualCheck.show()
         ManualCheck.connect("activate", self.SetIconAndMenuRemote2)
         menu.append(ManualCheck)
+
+        ManualUpdate = gtk.ImageMenuItem(gtk.STOCK_HOME)
+        ManualUpdate.set_always_show_image(True)
+        ManualUpdate.show()
+        ManualUpdate.connect("activate", self.PullPushAll)
+        ManualUpdate.connect("activate", self.SetIconAndMenuRemote2)
+        menu.append(ManualUpdate)
 
         dirs_items = []
         for dir in self.dirs:
@@ -104,6 +111,10 @@ class AppIndicator:
         menu.append(quit)
 
         self.ind.set_menu(menu)
+
+        # Update the custom labels: must be done after `set_menu`.
+        ManualCheck.set_label("Check status")
+        ManualUpdate.set_label("Pull/Push")
 
         self.SetIconAndMenu(remote=True)  # Initialise the icon
 
@@ -244,6 +255,11 @@ class AppIndicator:
 
     def quit(self, widget, data=None):
         gtk.main_quit()
+
+    def PullPushAll(self):
+        """ Runs bactchgit -u """
+        cmd_line = "batchgit -u"
+        status = subprocess.check_output(cmd_line, shell=True)
 
 
 def _rcfile_help_messg(rcfile):
