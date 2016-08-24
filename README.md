@@ -47,7 +47,8 @@ is provided in the menu itself.
 
 ## Installation
 
-`checkgit` can be installed with `pip install checkgit`. Alternatively if you
+`checkgit` can be installed with `pip install checkgit`, but personally I
+use the following method. Alternatively if you
 want to install it from source, then clone the repo and
 
     $ python setup.py install
@@ -55,6 +56,23 @@ want to install it from source, then clone the repo and
 Once installed, you'll have an executable `checkgit` on your `PATH` which
 when called will start the indicator. Note that to work properly `checkgit`
 requires a file `~/.batchgitrc` listing the repos to check.
+
+### Installation alongside conda
+
+If you are using some variant of `conda` to handle your python environment, the
+following may be of use. Rather than installing checkgit as a conda package, I
+have found it is better to use the system python. The reason being that some
+of the dependencies have no easy `conda` installation. If you know how to fix
+this, please let me know.
+
+First, clone to repo. Then, after moving into the cloned directory,
+
+    $ sudo python setup.py install
+
+this installs the module in `/usr/local/bin/checkgit`. Now you can run it, but
+will probably recieve an error message regarding unmet dependencies, follow the
+instructions, always using `sudo apt-get`. Once complete, you should end up
+with a checkgit executable which is independant of your conda installation.
 
 ### Quickstart
 
