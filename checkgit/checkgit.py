@@ -190,9 +190,9 @@ class AppIndicator:
         """ Logic for setting the main icon """
 
         stati = self.CheckAllDirStatus()
-        states = [dic['state_to_origin'] for dic in stati.values()]
+        states = [dic['state_to_origin'] for dic in list(stati.values())]
 
-        states = filter(lambda a: a != "no-state", states)  # Remove no-state
+        states = [a for a in states if a != "no-state"]  # Remove no-state
 
         if 'diverged' in states:
             return gtk.STOCK_DIALOG_WARNING
